@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Heart, MapPin, Star, Clock, ShoppingCart, Search, Menu, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Heart, MapPin, Star, Clock, ShoppingCart, Search, Menu, X, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useCart } from '@/context/CartContext';
 
 interface Restaurant {
   id: number;
@@ -100,7 +102,8 @@ const menuItems: MenuItem[] = [
 ];
 
 export default function Index() {
-  const [cartItems, setCartItems] = useState(0);
+  const navigate = useNavigate();
+  const { items, addItem } = useCart();
   const [favorites, setFavorites] = useState<number[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -111,8 +114,14 @@ export default function Index() {
     );
   };
 
-  const addToCart = () => {
-    setCartItems(prev => prev + 1);
+  const handleAddToCart = (item: MenuItem) => {
+    addItem({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      restaurantId: item.restaurantId,
+      image: item.image,
+    });
   };
 
   return (
@@ -137,9 +146,10 @@ export default function Index() {
                 variant="outline"
                 size="sm"
                 className="relative"
+                onClick={() => navigate('/cart')}
               >
                 <ShoppingCart className="w-4 h-4 mr-2" />
-                Cart ({cartItems})
+                Cart ({items.length})
               </Button>
             </div>
 
